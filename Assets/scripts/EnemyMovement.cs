@@ -62,15 +62,21 @@ public class EnemyMovement : MonoBehaviour
     public void TakeDamage(int damage)
     {
         health -= damage;
-        
+
         if (health <= 0)
         {
-            Die();
+            Die(true); // Pasamos true porque fue eliminado por el jugador
         }
     }
-    
-    void Die()
+
+    void Die(bool killedByPlayer = false)
     {
+        // Si fue eliminado por el jugador (por disparo), contar el kill
+        if (killedByPlayer && GameManager.Instance != null)
+        {
+            GameManager.Instance.AddKill();
+        }
+
         Destroy(gameObject);
     }
     
@@ -84,7 +90,7 @@ public class EnemyMovement : MonoBehaviour
             {
                 playerMovement.Die();
             }
-            Die();
+            Die(false); // No contar como kill porque tocó al jugador
         }
     }
 }
