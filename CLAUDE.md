@@ -43,11 +43,27 @@ Packages/
 - Input via standard Unity Input axes (Horizontal/Vertical)
 
 ### Player Shooting (`PlayerShooting.cs`)
-- Fire rate limited shooting system
+- Fire rate limited shooting system with directional aiming
+- Cardinal direction targeting (N/S/E/W) based on last movement input
 - Dynamically creates bullet primitives (spheres) at runtime
-- Bullets have physics (gravity + forward velocity)
+- Bullets destroy enemies on collision via `EnemyMovement.TakeDamage()`
 - Automatic cleanup via `BulletLifetime` component
 - Input via mouse button or spacebar
+
+### Enemy System
+**`EnemyMovement.cs`**
+- AI follows player using target-seeking behavior
+- Physics-based movement on XZ plane only
+- Health system with damage handling
+- Auto-destruction on player collision or boundary exit (±12 units)
+- Requires GameObject tagged "Player" to function
+
+**`EnemySpawner.cs`**
+- Manages enemy population with configurable max count
+- Spawns from random cardinal directions at defined distance
+- Supports multiple enemy prefab variants
+- Automatic cleanup of destroyed enemy references
+- Gizmo visualization for spawn area in editor
 
 ## Development Commands
 
@@ -74,6 +90,8 @@ The project uses Unity's default C# scripting workflow. Scripts are compiled aut
 - Bullets are created dynamically via `GameObject.CreatePrimitive()`
 - Automatic cleanup through `Destroy()` timer and collision detection
 - Bullet destruction skips player collisions via tag check
+- Enemies spawned via `Instantiate()` with automatic reference tracking
+- Enemy cleanup on death, collision with player, or boundary exit
 
 ### Input System
 Project includes both:
@@ -85,13 +103,21 @@ Project includes both:
 ### Adding New Scripts
 Place C# scripts in `Assets/scripts/` directory following existing naming convention (PascalCase).
 
-### Modifying Player Behavior
-- Movement speed/boundaries: Edit `PlayerMovement.cs` inspector values or code
-- Shooting parameters: Edit `PlayerShooting.cs` fire rate and bullet properties
-- Physics tuning: Adjust Rigidbody constraints and velocity calculations
+### Modifying Gameplay Behavior
+- **Player Movement**: Edit `PlayerMovement.cs` - adjust `moveSpeed` and `boundarySize` values
+- **Player Shooting**: Edit `PlayerShooting.cs` - modify `bulletSpeed`, `fireRate`, and `bulletLifetime`
+- **Enemy AI**: Edit `EnemyMovement.cs` - tune `moveSpeed`, `health`, and `boundaryLimit`
+- **Enemy Spawning**: Edit `EnemySpawner.cs` - configure `maxEnemies`, `spawnInterval`, and `spawnDistance`
+- **Physics**: Adjust Rigidbody constraints and velocity calculations in respective scripts
 
 ### Working with Materials
-Materials are stored in `Assets/materials/`. Assign via Inspector or script using `Renderer.material`.
+Materials are stored in `Assets/materials/`. Current materials: IA1, IA2, IA3 (enemies), pj (player). Assign via Inspector or script using `Renderer.material`.
+
+### Setting Up Enemy Prefabs
+1. Create enemy GameObject with required components: Rigidbody, Collider, EnemyMovement script
+2. Assign material from `Assets/materials/`
+3. Tag as appropriate (not "Player")
+4. Save as prefab and assign to EnemySpawner's `enemyPrefabs` array
 
 ## Unity MCP Integration
 

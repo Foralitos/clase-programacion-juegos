@@ -8,33 +8,38 @@ public class PlayerShooting : MonoBehaviour
     [SerializeField] private float fireRate = 0.5f; // Tiempo entre disparos
 
     private float nextFireTime = 0f;
-    private Vector3 lastDirection = Vector3.forward; // Dirección inicial (hacia adelante)
 
     void Update()
     {
-        // Actualizar dirección basada en input de movimiento
-        float horizontal = Input.GetAxisRaw("Horizontal");
-        float vertical = Input.GetAxisRaw("Vertical");
-
-        // Si hay movimiento, actualizar la dirección de disparo
-        if (horizontal != 0 || vertical != 0)
+        // Disparar con las flechas del teclado
+        if (Time.time >= nextFireTime)
         {
-            // Priorizar direcciones cardinales (sin diagonales)
-            if (Mathf.Abs(vertical) > Mathf.Abs(horizontal))
-            {
-                lastDirection = vertical > 0 ? Vector3.forward : Vector3.back;
-            }
-            else
-            {
-                lastDirection = horizontal > 0 ? Vector3.right : Vector3.left;
-            }
-        }
+            Vector3 shootDirection = Vector3.zero;
 
-        // Disparar con Space o clic izquierdo
-        if ((Input.GetKey(KeyCode.Space) || Input.GetMouseButton(0)) && Time.time >= nextFireTime)
-        {
-            Shoot(lastDirection);
-            nextFireTime = Time.time + fireRate;
+            // Detectar qué flecha se presionó
+            if (Input.GetKey(KeyCode.UpArrow))
+            {
+                shootDirection = Vector3.forward; // Disparar hacia adelante
+            }
+            else if (Input.GetKey(KeyCode.DownArrow))
+            {
+                shootDirection = Vector3.back; // Disparar hacia atrás
+            }
+            else if (Input.GetKey(KeyCode.LeftArrow))
+            {
+                shootDirection = Vector3.left; // Disparar hacia la izquierda
+            }
+            else if (Input.GetKey(KeyCode.RightArrow))
+            {
+                shootDirection = Vector3.right; // Disparar hacia la derecha
+            }
+
+            // Si se presionó alguna flecha, disparar en esa dirección
+            if (shootDirection != Vector3.zero)
+            {
+                Shoot(shootDirection);
+                nextFireTime = Time.time + fireRate;
+            }
         }
     }
 

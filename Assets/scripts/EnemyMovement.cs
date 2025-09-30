@@ -76,9 +76,14 @@ public class EnemyMovement : MonoBehaviour
     
     void OnCollisionEnter(Collision collision)
     {
-        // Si colisiona con el jugador, destruirse
+        // Si colisiona con el jugador, destruirse y matar al jugador
         if (collision.gameObject.CompareTag("Player"))
         {
+            PlayerMovement playerMovement = collision.gameObject.GetComponent<PlayerMovement>();
+            if (playerMovement != null)
+            {
+                playerMovement.Die();
+            }
             Die();
         }
     }

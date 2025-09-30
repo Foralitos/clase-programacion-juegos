@@ -7,20 +7,53 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float boundarySize = 9f; // Límites del plano (plano escalado x2 = 20 unidades, menos margen)
 
     private Rigidbody rb;
-    
+    private bool isDead = false;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        
+
         // Congelar rotación para evitar que el cubo se voltee
         rb.freezeRotation = true;
+    }
+
+    public bool IsDead()
+    {
+        return isDead;
+    }
+
+    public void Die()
+    {
+        if (!isDead)
+        {
+            isDead = true;
+            Debug.Log("¡El jugador ha muerto!");
+            Destroy(gameObject);
+        }
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        // Si colisiona con un enemigo, morir
+        if (collision.gameObject.GetComponent<EnemyMovement>() != null)
+        {
+            Die();
+        }
     }
     
     void Update()
     {
-        // Obtener input del jugador
-        float horizontal = Input.GetAxis("Horizontal");
-        float vertical = Input.GetAxis("Vertical");
+        // No moverse si está muerto
+        if (isDead) return;
+
+        // Obtener input del jugador con WASD
+        float horizontal = 0f;
+        float vertical = 0f;
+
+        if (Input.GetKey(KeyCode.W)) vertical += 1f;
+        if (Input.GetKey(KeyCode.S)) vertical -= 1f;
+        if (Input.GetKey(KeyCode.A)) horizontal -= 1f;
+        if (Input.GetKey(KeyCode.D)) horizontal += 1f;
         
         // Crear vector de movimiento
         Vector3 movement = new Vector3(horizontal, 0f, vertical).normalized;
